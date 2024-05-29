@@ -1,11 +1,15 @@
+import { useRoutes } from 'react-router-dom';
 import './App.css';
+import Main from './components/Main';
+import Favorites from './components/Favorites';
 
-function App() {
-  return (
-    <div>
-        React App
-    </div>
-  );
-}
+const App = () => {
+  const routes = useRoutes([
+    { path: '/', element: <Main /> },
+    { path: 'favorites', element: <Favorites /> }
+  ]);
+
+  return routes;
+};
 
 export default App;
