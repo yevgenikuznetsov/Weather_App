@@ -1,67 +1,120 @@
-import { Button, Card, MenuItem, Select, TextField } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { Backdrop, Button, CircularProgress, MenuItem, Select, TextField } from "@mui/material";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchWeather, fetchWeatherDetails } from "../redux/action/WeatherAction";
+import { isEnglishLetter } from "../util/StringUtil";
+import { resetWeatherState } from "../redux/slices/WeatherReducer";
 
 const Main = () => {
-    const [citySearch, setCitySearch] = useState('');
-    const [selectedLocationKey, setSelectedLocationKey] = useState('');
-    const { locationOptions, currentWeather } = useSelector(state => state.weather);
+    const [citySearch, setCitySearch] = useState({citySearchName: '', isNameValid: true});
+    const [selectedLocation, setSelectedLocation] = useState({});
+    const { locationOptions, currentWeather, currentLocation, isLoading } = useSelector(state => state.weather);
 
     const dispatch = useDispatch();
 
+    const isInitialMount = useRef(true);
+
+    useEffect(() => {
+        const fetchDefaultWeather = () => {
+            if(isInitialMount.current) {
+                dispatch(fetchWeatherDetails(215854));
+                isInitialMount.current = false;
+            }
+        };
+
+        fetchDefaultWeather();
+      }, [dispatch]);
+
     useEffect(() => {
         if (locationOptions.length === 1) {
-          const cityKey = locationOptions[0].Key;
-          setSelectedLocationKey(cityKey);
-          //dispatch(fetchWeatherDetails(locationOptions[0].Key));
+          const cityInfo = locationOptions[0];
+          setSelectedLocation(cityInfo);
+          dispatch(fetchWeatherDetails(cityInfo.Key));
         }
       }, [locationOptions, dispatch]);
 
     const handleSearch = useCallback(() => {
-        dispatch(fetchWeather(citySearch));
-      }, [citySearch, dispatch]);
+        const cityName = citySearch.citySearchName;
+
+        if(cityName.length === 0) {
+            setSelectedLocation({});
+            dispatch(resetWeatherState());
+            return;
+        }
+
+        if(!isEnglishLetter(cityName)) {
+            setCitySearch({...citySearch, isNameValid: false})
+            return;
+        } else if (!cityName.isNameValid) {
+            setCitySearch({...citySearch, isNameValid: true})
+        }
+
+        if(currentLocation === cityName) {
+            return;
+        }
+
+        setSelectedLocation({});
+        dispatch(fetchWeather(cityName));
+      }, [citySearch, currentLocation, dispatch]);
 
       const handleLocationSelect = useCallback((event) => {
-        const locationKey = event.target.value;
-        setSelectedLocationKey(locationKey);
-        dispatch(fetchWeatherDetails(locationKey));
-      }, [dispatch]);
+        const selectedOption = locationOptions.find(option => option.Key === event.target.value);
+        setSelectedLocation(selectedOption);
+        dispatch(fetchWeatherDetails(selectedOption.Key));
+      }, [dispatch, locationOptions]);
+
+      const handleBlur = () => {
+        const cityName = citySearch.citySearchName;
+
+        if(!isEnglishLetter(cityName)) {
+            setCitySearch({...citySearch, isNameValid: false})
+        } else if (!cityName.isNameValid) {
+            setCitySearch({...citySearch, isNameValid: true})
+        }
+      };
     
     return (
         <>
             <div>Main Page</div>
             <TextField
                 label="City"
-                value={citySearch}
+                onBlur={handleBlur}
+                value={citySearch.citySearchName}
+                error={!citySearch.isNameValid}
                 placeholder="For example: Tel Aviv"
-                onChange={(e) => setCitySearch(e.target.value)}
+                onChange={(e) => setCitySearch({...citySearch, citySearchName: e.target.value})}
             />
             <Button variant="contained" color="primary" onClick={handleSearch} style={{ marginTop: 20, marginLeft: 10 }}>
                 Search
             </Button>
 
-            {locationOptions.length > 0 && (
+            {locationOptions.length > 1 && (
                 <Select
-                    value={selectedLocationKey}
+                    value={selectedLocation?.Key || ''}
                     onChange={handleLocationSelect}
                     displayEmpty
+                    style={{ marginTop: 20 }}
                 >
                 <MenuItem value="" disabled>Select a location</MenuItem>
                 {locationOptions.map((option) => (
                     <MenuItem key={option.Key} value={option.Key}>
-                        {option.Country.LocalizedName}
+                        {option.LocalizedName} {option.Country.LocalizedName}
                     </MenuItem>
-                ))}
-                </Select>
+            ))}
+          </Select>
             )}
 
             {currentWeather &&
                 <>
                     <p>Temperature</p>
+                    <p>{selectedLocation.Key}</p>
                     <p>Minimum {currentWeather.DailyForecasts[0].Temperature.Minimum.Value}</p>
                 </>
             }
+
+            <Backdrop open={isLoading} style={{ zIndex: 9999 }}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </>
     )
 }
