@@ -1,14 +1,14 @@
-import { Backdrop, Button, CircularProgress, MenuItem, Select, TextField } from "@mui/material";
+import { Backdrop, Button, CircularProgress, MenuItem, Select, Snackbar, TextField } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchWeather, fetchWeatherDetails } from "../redux/action/WeatherAction";
 import { isEnglishLetter } from "../util/StringUtil";
-import { resetWeatherState } from "../redux/slices/WeatherReducer";
+import { resetWeatherState, resetErrorState } from "../redux/slices/WeatherReducer";
 
 const Main = () => {
     const [citySearch, setCitySearch] = useState({citySearchName: '', isNameValid: true});
     const [selectedLocation, setSelectedLocation] = useState({});
-    const { locationOptions, currentWeather, currentLocation, isLoading } = useSelector(state => state.weather);
+    const { locationOptions, currentWeather, currentLocation, isLoading, errorFetchMessage } = useSelector(state => state.weather);
 
     const dispatch = useDispatch();
 
@@ -72,6 +72,10 @@ const Main = () => {
             setCitySearch({...citySearch, isNameValid: true})
         }
       };
+
+      const handleCloseSnack = () => {
+        dispatch(resetErrorState());
+      } 
     
     return (
         <>
@@ -84,6 +88,7 @@ const Main = () => {
                 placeholder="For example: Tel Aviv"
                 onChange={(e) => setCitySearch({...citySearch, citySearchName: e.target.value})}
             />
+            {!citySearch.isNameValid && <p>Must contain only English letters</p>}
             <Button variant="contained" color="primary" onClick={handleSearch} style={{ marginTop: 20, marginLeft: 10 }}>
                 Search
             </Button>
@@ -115,6 +120,13 @@ const Main = () => {
             <Backdrop open={isLoading} style={{ zIndex: 9999 }}>
                 <CircularProgress color="inherit" />
             </Backdrop>
+
+            <Snackbar
+                open={errorFetchMessage.isOpenAlert}
+                autoHideDuration={6000}
+                onClose={handleCloseSnack}
+                message={errorFetchMessage.errorMsg}
+            />
         </>
     )
 }
