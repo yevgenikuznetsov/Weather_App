@@ -2,6 +2,7 @@ import { useRoutes } from 'react-router-dom';
 import './App.css';
 import Main from './components/Main';
 import Favorites from './components/Favorites';
+import Header from './components/Header';
 
 const App = () => {
   const routes = useRoutes([
@@ -9,7 +10,12 @@ const App = () => {
     { path: 'favorites', element: <Favorites /> }
   ]);
 
-  return routes;
+  return (
+    <>
+      <Header />
+      {routes}
+    </>
+  );
 };
 
 export default App;

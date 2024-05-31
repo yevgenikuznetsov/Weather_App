@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchWeather, fetchWeatherDetails } from "../action/WeatherAction";
 import { getErrorMessage } from "../../util/errorUtil";
+import { telAvivAutocomplete } from "../../constants/ResponseSearchCirtConst";
 
 const initialState = {
   currentLocation: 'Tel Aviv',
@@ -8,6 +9,7 @@ const initialState = {
   fiveDayForecast: [],
   locationOptions: [],
   errorFetchMessage: {errorMsg: '', isOpenAlert: false},
+  selectedLocation: telAvivAutocomplete[0],
   isLoading: false
 };
 
@@ -20,11 +22,19 @@ const weatherSlice = createSlice({
       state.errorFetchMessage = initialState.errorFetchMessage;
       state.currentWeather = initialState.currentWeather;
       state.isLoading = initialState.isLoading;
+      state.selectedLocation = {};
       state.fiveDayForecast = initialState.fiveDayForecast;
       state.locationOptions = initialState.locationOptions;
     },
     resetErrorState: (state) => {
       state.errorFetchMessage = initialState.errorFetchMessage;
+    },
+    setSlectedLocation: (state, action) => {
+      state.selectedLocation = action.payload;
+    },
+    selectFavoriteCity: (state, action) => {
+      state.selectedLocation = action.payload;
+      state.locationOptions = initialState.locationOptions;
     }
   },
   extraReducers: (builder) => {
@@ -34,6 +44,7 @@ const weatherSlice = createSlice({
         state.fiveDayForecast = [];
         state.locationOptions = [];
         state.isLoading = true;
+        state.selectedLocation = {};
         state.currentLocation = action.meta.arg;
       })
       .addCase(fetchWeather.fulfilled, (state, action) => {
@@ -79,6 +90,6 @@ const weatherSlice = createSlice({
   },
 });
 
-export const { resetWeatherState, resetErrorState } = weatherSlice.actions;
+export const { resetWeatherState, resetErrorState, setSlectedLocation, selectFavoriteCity } = weatherSlice.actions;
 
 export default weatherSlice.reducer;

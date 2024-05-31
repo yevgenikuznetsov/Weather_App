@@ -1,35 +1,29 @@
 import { Backdrop, Button, Card, CardContent, CircularProgress, MenuItem, Select, Snackbar, TextField, Typography } from "@mui/material";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchWeather, fetchWeatherDetails } from "../redux/action/WeatherAction";
 import { isEnglishLetter } from "../util/StringUtil";
-import { resetWeatherState, resetErrorState } from "../redux/slices/WeatherReducer";
+import { resetWeatherState, resetErrorState, setSlectedLocation } from "../redux/slices/WeatherReducer";
+import { addFavorite, removeFavorite } from "../redux/slices/FavoritesReducer";
 
 const Main = () => {
-    const [citySearch, setCitySearch] = useState({citySearchName: '', isNameValid: true});
-    const [selectedLocation, setSelectedLocation] = useState({});
-    const { locationOptions, currentWeather, currentLocation, isLoading, errorFetchMessage, fiveDayForecast } = useSelector(state => state.weather);
+    const [isSelectedLocationFavor, setIsSelectedLocationFavor] = useState(false);
+    const { locationOptions, currentWeather, currentLocation, isLoading, errorFetchMessage, fiveDayForecast, selectedLocation } = useSelector(state => state.weather);
+    const [citySearch, setCitySearch] = useState({citySearchName: selectedLocation.LocalizedName || '', isNameValid: true});
+    const favorites = useSelector(state => state.favorites.favorites);
 
     const dispatch = useDispatch();
 
-    const isInitialMount = useRef(true);
-
     useEffect(() => {
-        const fetchDefaultWeather = () => {
-            if(isInitialMount.current) {
-                dispatch(fetchWeatherDetails(215854));
-                isInitialMount.current = false;
-            }
-        };
-
-        fetchDefaultWeather();
-      }, [dispatch]);
+        if(Object.keys(selectedLocation).length !== 0) {
+            dispatch(fetchWeatherDetails(selectedLocation.Key));
+            setIsSelectedLocationFavor(favorites.some(fav => fav.Key === selectedLocation.Key));
+        }
+      }, [dispatch, favorites, selectedLocation]);
 
     useEffect(() => {
         if (locationOptions.length === 1) {
-          const cityInfo = locationOptions[0];
-          setSelectedLocation(cityInfo);
-          dispatch(fetchWeatherDetails(cityInfo.Key));
+          dispatch(setSlectedLocation(locationOptions[0]));
         }
       }, [locationOptions, dispatch]);
 
@@ -37,7 +31,6 @@ const Main = () => {
         const cityName = citySearch.citySearchName;
 
         if(cityName.length === 0) {
-            setSelectedLocation({});
             dispatch(resetWeatherState());
             return;
         }
@@ -53,14 +46,12 @@ const Main = () => {
             return;
         }
 
-        setSelectedLocation({});
         dispatch(fetchWeather(cityName));
       }, [citySearch, currentLocation, dispatch]);
 
       const handleLocationSelect = useCallback((event) => {
         const selectedOption = locationOptions.find(option => option.Key === event.target.value);
-        setSelectedLocation(selectedOption);
-        dispatch(fetchWeatherDetails(selectedOption.Key));
+        dispatch(setSlectedLocation(selectedOption));
       }, [dispatch, locationOptions]);
 
       const handleBlur = () => {
@@ -76,6 +67,17 @@ const Main = () => {
       const handleCloseSnack = () => {
         dispatch(resetErrorState());
       } 
+
+      const toggleFavorite = () => {
+        if (isSelectedLocationFavor) {
+          dispatch(removeFavorite(selectedLocation));
+        } else {
+          dispatch(addFavorite(selectedLocation));
+        }
+
+        setIsSelectedLocationFavor(!isSelectedLocationFavor);
+      };
+
     
     return (
         <>
@@ -111,6 +113,10 @@ const Main = () => {
 
             {currentWeather &&
                 <>
+                    <Button onClick={toggleFavorite}>
+                        {isSelectedLocationFavor ? 'Remove from Favorites' : 'Add to Favorites'}
+                    </Button>
+
                     <p>Temperature</p>
                     <p>{selectedLocation.Key}</p>
                     <p>Minimum {currentWeather.Temperature.Minimum.Value}</p>
