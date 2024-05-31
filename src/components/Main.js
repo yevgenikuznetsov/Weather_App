@@ -1,4 +1,4 @@
-import { Backdrop, Button, CircularProgress, MenuItem, Select, Snackbar, TextField } from "@mui/material";
+import { Backdrop, Button, Card, CardContent, CircularProgress, MenuItem, Select, Snackbar, TextField, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchWeather, fetchWeatherDetails } from "../redux/action/WeatherAction";
@@ -8,7 +8,7 @@ import { resetWeatherState, resetErrorState } from "../redux/slices/WeatherReduc
 const Main = () => {
     const [citySearch, setCitySearch] = useState({citySearchName: '', isNameValid: true});
     const [selectedLocation, setSelectedLocation] = useState({});
-    const { locationOptions, currentWeather, currentLocation, isLoading, errorFetchMessage } = useSelector(state => state.weather);
+    const { locationOptions, currentWeather, currentLocation, isLoading, errorFetchMessage, fiveDayForecast } = useSelector(state => state.weather);
 
     const dispatch = useDispatch();
 
@@ -113,9 +113,18 @@ const Main = () => {
                 <>
                     <p>Temperature</p>
                     <p>{selectedLocation.Key}</p>
-                    <p>Minimum {currentWeather.DailyForecasts[0].Temperature.Minimum.Value}</p>
+                    <p>Minimum {currentWeather.Temperature.Minimum.Value}</p>
                 </>
             }
+
+            {fiveDayForecast.map((day, index) => (
+                    <Card key={index} style={{ marginTop: 10 }}>
+                      <CardContent>
+                        <Typography variant="body2">{new Date(day.Date).toLocaleDateString()}</Typography>
+                        <Typography variant="body2">{day.Temperature.Minimum.Value}°C - {day.Temperature.Maximum.Value}°C</Typography>
+                      </CardContent>
+                    </Card>
+            ))}
 
             <Backdrop open={isLoading} style={{ zIndex: 9999 }}>
                 <CircularProgress color="inherit" />

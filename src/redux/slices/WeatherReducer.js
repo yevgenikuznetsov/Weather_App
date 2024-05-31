@@ -17,9 +17,10 @@ const weatherSlice = createSlice({
   reducers: {
     resetWeatherState: (state) => {
       state.currentLocation = '';
-      state.errorFetchMessage = initialState.errorFetchMassage;
+      state.errorFetchMessage = initialState.errorFetchMessage;
       state.currentWeather = initialState.currentWeather;
       state.isLoading = initialState.isLoading;
+      state.fiveDayForecast = initialState.fiveDayForecast;
       state.locationOptions = initialState.locationOptions;
     },
     resetErrorState: (state) => {
@@ -30,6 +31,7 @@ const weatherSlice = createSlice({
     builder
       .addCase(fetchWeather.pending, (state, action) => {
         state.currentWeather = null;
+        state.fiveDayForecast = [];
         state.locationOptions = [];
         state.isLoading = true;
         state.currentLocation = action.meta.arg;
@@ -46,6 +48,10 @@ const weatherSlice = createSlice({
           state.currentWeather = null;
         }
 
+        if(state.fiveDayForecast.length > 1) {
+          state.fiveDayForecast = [];
+        }
+
         state.isLoading = false;
         state.locationOptions = [];
         state.errorFetchMessage = {errorMsg: getErrorMessage(action.error.status), isOpenAlert: true}
@@ -54,15 +60,21 @@ const weatherSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(fetchWeatherDetails.fulfilled, (state, action) => {
-        state.currentWeather = action.payload;
+        state.currentWeather = action.payload.currentWeather;
+        state.fiveDayForecast = action.payload.fiveDayForecast;
         state.isLoading = false;
       })
       .addCase(fetchWeatherDetails.rejected, (state, action) => {
         if(state.currentWeather !== null) {
           state.currentWeather = null;
         }
+
+        if(state.fiveDayForecast.length > 1) {
+          state.fiveDayForecast = [];
+        }
+        
         state.isLoading = false;
-        state.errorFetchMassage = {errorMsg: getErrorMessage(action.error.status), isOpenAlert: true}
+        state.errorFetchMessage = {errorMsg: getErrorMessage(action.error.status), isOpenAlert: true}
       })
   },
 });
