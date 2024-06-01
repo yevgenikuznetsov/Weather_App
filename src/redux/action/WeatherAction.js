@@ -1,19 +1,19 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { getCityWeatherForLastFiveDay, getCityWeatherForOneDay, getLocationsMatchAnAutocomplete } from "../../services/WeatherService";
 
-export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (city, thunkAPI) => {
+export const fetchCityDetails = createAsyncThunk('weather/fetchCityDetails', async (city, thunkAPI) => {
     try {
-        const locationOptions = await getLocationsMatchAnAutocomplete(city);
+        const cityMatchByCityName = await getLocationsMatchAnAutocomplete(city);
 
-        const responseLocationOptions = {locationOptions, status: 200}
+        const responseCityMatchByCityName = {cityMatchByCityName, status: 200}
     
-        if (!(responseLocationOptions.status === 200)) {
+        if (!(responseCityMatchByCityName.status === 200)) {
             return thunkAPI.rejectWithValue({
-              status: responseLocationOptions.status
+              status: responseCityMatchByCityName.status
             });
         }
 
-        return responseLocationOptions.locationOptions;
+        return responseCityMatchByCityName.cityMatchByCityName;
     } catch {
         return thunkAPI.rejectWithValue({
             status: 500
@@ -23,15 +23,15 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (city
 });
 
 export const fetchWeatherDetails = createAsyncThunk('weather/fetchWeatherDetails', async (cityKey, thunkAPI) => {
-    let responseCurrentWeather, responseLastFiveDayWeather;
+    let responseCurrentDayForecast, responseNextFiveDayWeather;
     try {
-        const currentWeather = await getCityWeatherForOneDay(cityKey);
+        const currentDayForecast = await getCityWeatherForOneDay(cityKey);
 
-        responseCurrentWeather = {currentWeather, status: 200};
+        responseCurrentDayForecast = {currentDayForecast, status: 200};
 
-        if(!(responseCurrentWeather.status === 200)) {
+        if(!(responseCurrentDayForecast.status === 200)) {
             return thunkAPI.rejectWithValue({
-                status: responseCurrentWeather.status
+                status: responseCurrentDayForecast.status
               });
         }
     } catch {
@@ -41,13 +41,13 @@ export const fetchWeatherDetails = createAsyncThunk('weather/fetchWeatherDetails
     }
 
     try {
-        const lastFiveDayWeather = await getCityWeatherForLastFiveDay(cityKey);
+        const nextFiveDayWeather = await getCityWeatherForLastFiveDay(cityKey);
 
-        responseLastFiveDayWeather = {lastFiveDayWeather, status: 200};
+        responseNextFiveDayWeather = {nextFiveDayWeather, status: 200};
 
-        if(!(responseLastFiveDayWeather.status === 200)) {
+        if(!(responseNextFiveDayWeather.status === 200)) {
             return thunkAPI.rejectWithValue({
-                status: responseLastFiveDayWeather.status
+                status: responseNextFiveDayWeather.status
               });
         }
     } catch {
@@ -57,7 +57,8 @@ export const fetchWeatherDetails = createAsyncThunk('weather/fetchWeatherDetails
     }
 
     return {
-        currentWeather: responseCurrentWeather.currentWeather.DailyForecasts[0],
-        fiveDayForecast: responseLastFiveDayWeather.lastFiveDayWeather.DailyForecasts
+        cityKey,
+        fiveDayForecast: responseNextFiveDayWeather.nextFiveDayWeather.DailyForecasts,
+        currentDayForecast: responseCurrentDayForecast.currentDayForecast.DailyForecasts[0]
     };
 });

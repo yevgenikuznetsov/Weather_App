@@ -1,16 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchWeather, fetchWeatherDetails } from "../action/WeatherAction";
+import { fetchCityDetails, fetchWeatherDetails } from "../action/WeatherAction";
 import { getErrorMessage } from "../../util/errorUtil";
 import { telAvivAutocomplete } from "../../constants/ResponseSearchCirtConst";
 
 const initialState = {
-  currentLocation: 'Tel Aviv',
-  currentWeather: null,
-  fiveDayForecast: [],
-  locationOptions: [],
+  cityMatches: [],
+  isLoading: false,
+  selectedCity: telAvivAutocomplete[0],
   errorFetchMessage: {errorMsg: '', isOpenAlert: false},
-  selectedLocation: telAvivAutocomplete[0],
-  isLoading: false
+  cityWeather : {cityKey: '', fiveDayForecast: [], currentDayForecast: null}
 };
 
 const weatherSlice = createSlice({
@@ -18,78 +16,71 @@ const weatherSlice = createSlice({
   initialState,
   reducers: {
     resetWeatherState: (state) => {
-      state.currentLocation = '';
-      state.errorFetchMessage = initialState.errorFetchMessage;
-      state.currentWeather = initialState.currentWeather;
+      state.selectedCity = {};
       state.isLoading = initialState.isLoading;
-      state.selectedLocation = {};
-      state.fiveDayForecast = initialState.fiveDayForecast;
-      state.locationOptions = initialState.locationOptions;
+      state.cityMatches = initialState.cityMatches;
+      state.cityWeather = initialState.cityWeather;
+      state.errorFetchMessage = initialState.errorFetchMessage;
     },
     resetErrorState: (state) => {
       state.errorFetchMessage = initialState.errorFetchMessage;
     },
-    setSlectedLocation: (state, action) => {
-      state.selectedLocation = action.payload;
+    setSlectedCity: (state, action) => {
+      state.selectedCity = action.payload;
     },
     selectFavoriteCity: (state, action) => {
-      state.selectedLocation = action.payload;
-      state.locationOptions = initialState.locationOptions;
+      state.selectedCity = action.payload;
+      state.cityMatches = initialState.cityMatches;
+      state.errorFetchMessage = initialState.errorFetchMessage;
     }
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchWeather.pending, (state, action) => {
-        state.currentWeather = null;
-        state.fiveDayForecast = [];
-        state.locationOptions = [];
+      .addCase(fetchCityDetails.pending, (state) => {
+        state.cityMatches = [];
         state.isLoading = true;
-        state.selectedLocation = {};
-        state.currentLocation = action.meta.arg;
+        state.selectedCity = {};
+        state.cityWeather = initialState.cityWeather;
       })
-      .addCase(fetchWeather.fulfilled, (state, action) => {
-        state.locationOptions = action.payload;
+      .addCase(fetchCityDetails.fulfilled, (state, action) => {
+        state.cityMatches = action.payload;
 
         if(action.payload.length !== 1) {
           state.isLoading = false;
         }
       })
-      .addCase(fetchWeather.rejected, (state, action) => {
-        if(state.currentWeather !== null) {
-          state.currentWeather = null;
+      .addCase(fetchCityDetails.rejected, (state, action) => {
+        if(state.cityWeather?.cityKey && state.cityWeather.cityKey.length > 0) {
+          state.cityWeather = initialState.cityWeather;
         }
 
-        if(state.fiveDayForecast.length > 1) {
-          state.fiveDayForecast = [];
-        }
-
+        state.cityMatches = [];
         state.isLoading = false;
-        state.locationOptions = [];
         state.errorFetchMessage = {errorMsg: getErrorMessage(action.error.status), isOpenAlert: true}
       })
       .addCase(fetchWeatherDetails.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(fetchWeatherDetails.fulfilled, (state, action) => {
-        state.currentWeather = action.payload.currentWeather;
-        state.fiveDayForecast = action.payload.fiveDayForecast;
+        state.cityWeather = {
+          cityKey: action.payload.cityKey, 
+          fiveDayForecast: action.payload.fiveDayForecast,
+          currentDayForecast: action.payload.currentDayForecast
+        };
+
         state.isLoading = false;
       })
       .addCase(fetchWeatherDetails.rejected, (state, action) => {
-        if(state.currentWeather !== null) {
-          state.currentWeather = null;
+        if(state.cityWeather?.cityKey && state.cityWeather.cityKey.length > 0) {
+          state.cityWeather = initialState.cityWeather;
         }
 
-        if(state.fiveDayForecast.length > 1) {
-          state.fiveDayForecast = [];
-        }
-        
         state.isLoading = false;
         state.errorFetchMessage = {errorMsg: getErrorMessage(action.error.status), isOpenAlert: true}
       })
   },
 });
 
-export const { resetWeatherState, resetErrorState, setSlectedLocation, selectFavoriteCity } = weatherSlice.actions;
+export const { resetWeatherState, resetErrorState, setSlectedCity, selectFavoriteCity } = weatherSlice.actions;
 
 export default weatherSlice.reducer;

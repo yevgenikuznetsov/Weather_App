@@ -2,23 +2,33 @@ import { Button, Card, CardContent, Typography } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { selectFavoriteCity } from "../redux/slices/WeatherReducer";
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
 
 
 const Favorites = () => {
-    const favorites = useSelector((state) => state.favorites.favorites);
+  const { isLoading } = useSelector(state => state.weather);
+  const favoriteCities = useSelector((state) => state.favorites.favoriteCities);
+  
+  const [selectedCity, setSelectedCity] = useState({});
     
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+    useEffect(() => {
+        if(Object.keys(selectedCity).length !== 0 && !isLoading) {
+            dispatch(selectFavoriteCity(selectedCity));
+            navigate('/');
+        }
+    },[dispatch, isLoading, navigate, selectedCity])
 
 
     const handleFavoriteClick = (favorite) => {
-      dispatch(selectFavoriteCity(favorite));
-      navigate('/');
+        setSelectedCity(favorite);
     };
 
     return (
         <>
-          {favorites.map((favorite, index) => (
+          {favoriteCities.map((favorite, index) => (
             <Card key={index} style={{ marginTop: 10 }}>
               <CardContent>
                 <Typography variant="h6">{favorite.LocalizedName}</Typography>
