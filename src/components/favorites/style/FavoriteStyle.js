@@ -34,3 +34,10 @@ export const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
 `
+
+export const FavoriteCityNotFoundWrapper = styled.div`
+  display: flex;
+  margin-top: 100px;
+  align-items: center;
+  justify-content: center;
+`

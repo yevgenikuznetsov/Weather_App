@@ -30,6 +30,7 @@ const weatherSlice = createSlice({
     },
     selectFavoriteCity: (state, action) => {
       state.selectedCity = action.payload;
+      state.cityWeather = initialState.cityWeather;
       state.cityMatches = initialState.cityMatches;
       state.errorFetchMessage = initialState.errorFetchMessage;
     }

@@ -4,13 +4,14 @@ import { selectFavoriteCity } from "../../redux/slices/WeatherReducer";
 import { useNavigate } from 'react-router-dom';
 import Card from "../../UI/Card";
 import FavoriteButton from "./FavoriteButton";
-import { ButtonWrapper, FavoritesWrapper, Wrapper } from "./style/FavoriteStyle";
+import { ButtonWrapper, FavoriteCityNotFoundWrapper, FavoritesWrapper, Wrapper } from "./style/FavoriteStyle";
 import FavoriteText from "./FavoriteText";
 import { removeFavorite } from "../../redux/slices/FavoritesReducer";
+import FavoritesCityNotFound from "./FavoritesCityNotFound";
 
 const Favorites = () => {
   const favoriteCities = useSelector((state) => state.favorites.favoriteCities);
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -21,6 +22,14 @@ const Favorites = () => {
 
   const onClick = (city) => {
     dispatch(removeFavorite(city));
+  }
+
+  if(favoriteCities.length === 0) {
+    return (
+      <FavoriteCityNotFoundWrapper>
+        <FavoritesCityNotFound/>
+      </FavoriteCityNotFoundWrapper>
+    )
   }
 
   return (

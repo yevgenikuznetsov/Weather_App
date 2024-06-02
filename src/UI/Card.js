@@ -7,8 +7,8 @@ const Wrapper = styled.div`
     background: white;
     border-radius: 15px;
 
-    width: ${(props) => props.width || 'auto'};
-    height: ${(props) => props.height || 'auto'};
+    width: ${(props) => props.width || '100%'};
+    height: ${(props) => props.height || '100%'};
 `
 
 
