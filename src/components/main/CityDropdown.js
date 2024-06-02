@@ -7,8 +7,10 @@ import SelectDropdown from "../../UI/SelectDropdown";
 import styled from "styled-components";
 
 const CirtSelecteDropdown = styled(Select)`
-    width: 500px;
+    opacity: 0.8;
+    width: 730px;
     margin-top: 20px;
+    background: white;
 `
 
 const CityDropdown = ({selectedCityKey, cityMatches}) => {

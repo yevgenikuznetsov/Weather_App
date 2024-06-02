@@ -4,7 +4,7 @@ import { isEnglishLetter } from "../../util/util";
 import { useDispatch } from "react-redux";
 import { resetWeatherState } from "../../redux/slices/WeatherReducer";
 import { fetchCityDetails } from "../../redux/action/WeatherAction";
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -14,6 +14,14 @@ const Wrapper = styled.div`
     align-items: center;
     flex-direction: row;
     justify-content: center;
+`
+
+const SearchTextField = styled(TextField)`
+opacity: 0.8;
+width: 610px;
+background: white;
+
+
 `
 
 const SearchMainPanel = ({isLoading, selectedCity}) => {
@@ -59,13 +67,14 @@ const SearchMainPanel = ({isLoading, selectedCity}) => {
 
     return (
         <Wrapper>
-            <SearchPanel width={'500px'}
-                         label="City Name"
+            <SearchPanel label="City Name"
                          onBlur={handlerBlur}
                          onChange={handlerOnChnage}
+                         SearchTextField={SearchTextField}     
                          placeholder="For example: Tel Aviv"
                          isErrorInput={!citySearch.isNameValid}
-                         inputValue={citySearch.citySearchName}             
+                         inputValue={citySearch.citySearchName}       
+                          
                          errorMessage={'Must contain only English letters'}
             />
 

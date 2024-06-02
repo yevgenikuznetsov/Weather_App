@@ -1,13 +1,14 @@
-import { Backdrop, Button, Card, CardContent, CircularProgress, MenuItem, Select, Snackbar, TextField, Typography } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCityDetails, fetchWeatherDetails } from "../../redux/action/WeatherAction";
-import { isEnglishLetter } from "../../util/util";
-import { resetWeatherState, resetErrorState, setSlectedCity } from "../../redux/slices/WeatherReducer";
-import { addFavorite, removeFavorite } from "../../redux/slices/FavoritesReducer";
+import { fetchWeatherDetails } from "../../redux/action/WeatherAction";
+import { resetErrorState, setSlectedCity } from "../../redux/slices/WeatherReducer";
 import SearchMainPanel from "./SearchMainPanel";
 import CityDropdown from "./CityDropdown";
 import CityCurrentDayWeather from "./CityCurrentDayWeather";
+import CityFiveDayWeather from "./CityFiveDayWeather";
+import ErrorSnackbar from "../../UI/ErrorSnackbar";
+import Loading from "../../UI/Loading";
+import { MainWrapper, WeatherInformationWrapper, WeatherWrapper } from "./style/MainStyle";
 
 const Main = () => {
     const favoriteCities = useSelector(state => state.favorites.favoriteCities);
@@ -27,79 +28,52 @@ const Main = () => {
         
             setIsCityFavorite(favoriteCities.some(favorite => favorite.Key === selectedCity.Key));  
         }
-      }, [cityKey, dispatch, favoriteCities, selectedCity]);
+    }, [cityKey, dispatch, favoriteCities, selectedCity]);
 
     useEffect(() => {
         if (cityMatches.length === 1) {
           dispatch(setSlectedCity(cityMatches[0]));
         }
-      }, [cityMatches, dispatch]);
+    }, [cityMatches, dispatch]);
 
-      const handleCloseSnack = () => {
+    const handleCloseSnack = () => {
         dispatch(resetErrorState());
-      } 
-
-      const toggleFavoriteCity = () => {
-        if (isCityFavorite) {
-          dispatch(removeFavorite(selectedCity));
-        } else {
-          dispatch(addFavorite(selectedCity));
-        }
-
-        setIsCityFavorite(!isCityFavorite);
-      };
+    } 
 
     return (
-        <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center', alignItems: 'flex-start'}}>
+        <MainWrapper>
+          <WeatherWrapper>
             <SearchMainPanel isLoading={isLoading}
                              selectedCity={selectedCity.LocalizedName}
             />
 
             {cityMatches.length > 1 && (
-              <CityDropdown
-                selectedCityKey={selectedCity?.Key}
-                cityMatches={cityMatches}
+              <CityDropdown cityMatches={cityMatches}
+                            selectedCityKey={selectedCity?.Key}  
               />
             )}
 
             {cityKey &&
-              <CityCurrentDayWeather selectedCity={selectedCity}
-                                     isCityFavorite={isCityFavorite}
-                                     setIsCityFavorite={setIsCityFavorite}
-                                     currentDayForecast={currentDayForecast}
-              />
+              <WeatherInformationWrapper>
+                <CityCurrentDayWeather selectedCity={selectedCity}
+                                       isCityFavorite={isCityFavorite}
+                                       setIsCityFavorite={setIsCityFavorite}
+                                       currentDayForecast={currentDayForecast}
+                />
+
+                <CityFiveDayWeather fiveDayForecast={fiveDayForecast}/>
+              </WeatherInformationWrapper>
             }  
-          </div>
+          </WeatherWrapper>
 
+          <Loading isLoading={isLoading}/>
 
-
-
-
-            {cityKey &&
-                <>
-                    {fiveDayForecast.map((day, index) => (
-                    <Card key={index} style={{ marginTop: 10 }}>
-                      <CardContent>
-                        <Typography variant="body2">{new Date(day.Date).toLocaleDateString()}</Typography>
-                        <Typography variant="body2">{day.Temperature.Minimum.Value}°C - {day.Temperature.Maximum.Value}°C</Typography>
-                      </CardContent>
-                    </Card>
-            ))}
-                </>
-            }
-
-            <Backdrop open={isLoading} style={{ zIndex: 9999, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
-                <CircularProgress color="inherit" />
-            </Backdrop>
-
-            <Snackbar
-                open={errorFetchMessage.isOpenAlert}
-                autoHideDuration={6000}
-                onClose={handleCloseSnack}
-                message={errorFetchMessage.errorMsg}
-            />
-        </div>
+          <ErrorSnackbar autoHideDuration={6000} 
+                         onClose={handleCloseSnack} 
+                         message={errorFetchMessage.errorMsg}
+                         isOpen={errorFetchMessage.isOpenAlert} 
+          />
+        </MainWrapper>
     )
 }
 

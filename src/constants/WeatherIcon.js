@@ -1,0 +1,47 @@
+const startPath = '/icons/';
+
+export const weatherIcons = [
+    {value: 1, path: startPath + 'Sunny.png'},
+    {value: 2, path: startPath + 'Mostly_Sunny.png'},
+    {value: 3, path: startPath + 'Partly_Sunny.png'},
+    {value: 4, path: startPath + 'Intermittent_Clouds.png'},
+    {value: 5, path: startPath + 'Hazy_Sunshine.png'},
+    {value: 6, path: startPath + 'Mostly_Cloudy.png'},
+    {value: 7, path: startPath + 'Cloudy.png'},
+    {value: 8, path: startPath + 'Dreary_(Overcast).png'},
+    {value: 11, path: startPath + 'Fog.png'},
+    {value: 12, path: startPath + 'Showers.png'},
+    {value: 13, path: startPath + 'Mostly_Cloudy_w_Showers.png'},
+    {value: 14, path: startPath + 'Partly_Sunny_w_Showers.png'},
+    {value: 15, path: startPath + 'T-Storms.png'},
+    {value: 16, path: startPath + 'Mostly_Cloudy_w_T-Storms.png'},
+    {value: 17, path: startPath + 'Partly_Sunny_w_T-Storms.png'},
+    {value: 18, path: startPath + 'Rain.png'},
+    {value: 19, path: startPath + 'Flurries.png'},
+    {value: 20, path: startPath + 'Mostly_Cloudy_w_Flurries.png'},
+    {value: 21, path: startPath + 'Partly_Sunny_w_Flurries.png'},
+    {value: 22, path: startPath + 'Snow.png'},
+    {value: 23, path: startPath + 'Mostly_Cloudy_w_Snow.png'},
+    {value: 24, path: startPath + 'Ice.png'},
+    {value: 25, path: startPath + 'Sleet.png'},
+    {value: 26, path: startPath + 'Freezing_Rain.png'},
+    {value: 29, path: startPath + 'Rain_and_Snow.png'},
+    {value: 30, path: startPath + 'Hot.png'},
+    {value: 31, path: startPath + 'Cold.png'},
+    {value: 32, path: startPath + 'Windy.png'},
+    {value: 33, path: startPath + 'Clear.png'},
+    {value: 34, path: startPath + 'Mostly_clear.png'},
+    {value: 35, path: startPath + 'Partly_Cloudy.png'},
+    {value: 36, path: startPath + 'Intermittent_Clouds_N.png'},
+    {value: 37, path: startPath + 'Hazy_Moonlight.png'},
+    {value: 38, path: startPath + 'Mostly_Cloudy_N.png'},
+    {value: 39, path: startPath + 'Partly_Cloudy_w_Showers.png'},
+    {value: 40, path: startPath + 'Mostly_Cloudy_w_Showers_N.png'},
+    {value: 41, path: startPath + 'Partly_Cloudy_w_T-Storms.png'},
+    {value: 42, path: startPath + 'Mostly_Cloudy_w_T-Storms_N.png'},
+    {value: 43, path: startPath + 'Mostly_Cloudy_w_Flurries_N.png'},
+    {value: 44, path: startPath + 'Mostly_Cloudy_w_Snow_N.png'}
+];
+
+
+

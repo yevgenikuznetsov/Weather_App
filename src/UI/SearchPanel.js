@@ -13,19 +13,17 @@ const ErrorMessage = styled.p`
     font-size: 0.8rem;
 `;
 
-const SearchPanel = ({onChange, placeholder = '', isErrorInput, inputValue, onBlur, label, errorMessage, width}) => {
+const SearchPanel = ({onChange, placeholder = '', isErrorInput, inputValue, onBlur, label, errorMessage, SearchTextField = TextField}) => {
     return (
         <Wrapper>
-            <TextField
-                focused
-                label={label}
-                onBlur={onBlur}
-                value={inputValue}
-                onChange={onChange}
-                error={isErrorInput}
-                placeholder={placeholder}
-
-                sx={{ width: width || 'auto' }}
+            <SearchTextField
+                        focused
+                        label={label}
+                        onBlur={onBlur}
+                        value={inputValue}
+                        onChange={onChange}
+                        error={isErrorInput}
+                        placeholder={placeholder}
             />
 
             {isErrorInput &&
