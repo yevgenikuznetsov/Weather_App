@@ -28,3 +28,7 @@ export const getIconImagePath = (iconId) => {
 
     return icon.path;
 }
+
+export const objectNotEmpty = (obj) => {
+    return Object.keys(obj).length !== 0;
+}

@@ -4,11 +4,11 @@ import { fetchWeatherDetails } from "../../redux/action/WeatherAction";
 import { resetErrorState, setSlectedCity } from "../../redux/slices/WeatherReducer";
 import SearchMainPanel from "./SearchMainPanel";
 import CityDropdown from "./CityDropdown";
-import CityCurrentDayWeather from "./CityCurrentDayWeather";
-import CityFiveDayWeather from "./CityFiveDayWeather";
 import ErrorSnackbar from "../../UI/ErrorSnackbar";
 import Loading from "../../UI/Loading";
-import { MainWrapper, WeatherInformationWrapper, WeatherWrapper } from "./style/MainStyle";
+import { MainWrapper, WeatherWrapper } from "./style/MainStyle";
+import WeatherDetails from "./WeatherDetails";
+import { objectNotEmpty } from "../../util/util";
 
 const Main = () => {
     const favoriteCities = useSelector(state => state.favorites.favoriteCities);
@@ -16,19 +16,21 @@ const Main = () => {
 
     const [isCityFavorite, setIsCityFavorite] = useState(false);
 
-    const {cityKey, fiveDayForecast, currentDayForecast} = cityWeather;
+    const {cityKey, fiveDayForecast, currentDayForecast, currentWeather} = cityWeather;
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (Object.keys(selectedCity).length !== 0) {
-            if (cityKey !== selectedCity.Key) {
-                dispatch(fetchWeatherDetails(selectedCity.Key));
-            }
-        
-            setIsCityFavorite(favoriteCities.some(favorite => favorite.Key === selectedCity.Key));  
-        }
-    }, [cityKey, dispatch, favoriteCities, selectedCity]);
+      if (objectNotEmpty(selectedCity) && cityWeather.cityKey !== selectedCity.Key) {
+          dispatch(fetchWeatherDetails(selectedCity.Key));
+      }
+    }, [selectedCity, dispatch, cityWeather.cityKey]);
+
+    useEffect(() => {
+      if (objectNotEmpty(selectedCity)) {
+          setIsCityFavorite(favoriteCities.some(favorite => favorite.Key === selectedCity.Key));  
+      }
+    }, [favoriteCities, selectedCity]);
 
     useEffect(() => {
         if (cityMatches.length === 1) {
@@ -53,16 +55,12 @@ const Main = () => {
               />
             )}
 
-            {cityKey &&
-              <WeatherInformationWrapper>
-                <CityCurrentDayWeather selectedCity={selectedCity}
-                                       isCityFavorite={isCityFavorite}
-                                       setIsCityFavorite={setIsCityFavorite}
-                                       currentDayForecast={currentDayForecast}
-                />
-
-                <CityFiveDayWeather fiveDayForecast={fiveDayForecast}/>
-              </WeatherInformationWrapper>
+            {cityKey && <WeatherDetails selectedCity={selectedCity}
+                                        currentWeather={currentWeather}
+                                	      isCityFavorite={isCityFavorite}
+                                        fiveDayForecast={fiveDayForecast}
+                                        setIsCityFavorite={setIsCityFavorite}
+                                        currentDayForecast={currentDayForecast} />
             }  
           </WeatherWrapper>
 

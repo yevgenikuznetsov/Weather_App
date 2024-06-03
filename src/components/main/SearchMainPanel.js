@@ -17,11 +17,9 @@ const Wrapper = styled.div`
 `
 
 const SearchTextField = styled(TextField)`
-opacity: 0.8;
-width: 610px;
-background: white;
-
-
+    opacity: 0.8;
+    width: 610px;
+    background: white;
 `
 
 const SearchMainPanel = ({isLoading, selectedCity}) => {

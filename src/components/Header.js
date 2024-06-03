@@ -38,7 +38,7 @@ const Header = () => {
           </LogoLink>
 
           <ButtonContainer>
-            <Button color="inherit" component={Link} to="/">Main</Button>
+            <Button color="inherit" component={Link} to="/">Weather Details</Button>
             <Button color="inherit" component={Link} to="/favorites">Favorites</Button>
           </ButtonContainer>
         </HeaderToolbar>

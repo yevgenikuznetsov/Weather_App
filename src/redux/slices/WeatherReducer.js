@@ -8,7 +8,7 @@ const initialState = {
   isLoading: false,
   selectedCity: telAvivAutocomplete[0],
   errorFetchMessage: {errorMsg: '', isOpenAlert: false},
-  cityWeather : {cityKey: '', fiveDayForecast: [], currentDayForecast: null}
+  cityWeather : {cityKey: '', fiveDayForecast: [], currentDayForecast: {}, currentWeather: {}}
 };
 
 const weatherSlice = createSlice({
@@ -65,6 +65,7 @@ const weatherSlice = createSlice({
       .addCase(fetchWeatherDetails.fulfilled, (state, action) => {
         state.cityWeather = {
           cityKey: action.payload.cityKey, 
+          currentWeather: action.payload.currentWeather,
           fiveDayForecast: action.payload.fiveDayForecast,
           currentDayForecast: action.payload.currentDayForecast
         };

@@ -1,4 +1,4 @@
-import { Snackbar } from "@mui/material";
+import { Alert, Snackbar } from "@mui/material";
 
 const ErrorSnackbar = ({isOpen, autoHideDuration, onClose, message}) => {
     return (
@@ -7,7 +7,11 @@ const ErrorSnackbar = ({isOpen, autoHideDuration, onClose, message}) => {
             onClose={onClose}
             message={message}
             autoHideDuration={autoHideDuration}
-        />
+        >
+            <Alert onClose={onClose} severity="error">
+                {message}
+            </Alert>
+        </Snackbar>
     )
 }
 

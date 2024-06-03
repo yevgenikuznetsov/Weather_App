@@ -26,7 +26,7 @@ export const InformationCurrentDayForecastWrapper = styled.div`
     padding-top: 15px;
     flex-direction: row;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
 `
 
 export const TempratureTitle = styled.p`
@@ -34,10 +34,19 @@ export const TempratureTitle = styled.p`
 `
 
 export const WrapperIconsWeather = styled.div`
-    gap: 60px;
+    gap: 40px;
     display: flex;
+    padding-left: 30px;
 
     p {
         font-weight: bold;
     }
+`
+
+export const TemperatureDetails = styled.div`
+    padding-right: 20px;
+`
+
+export const CurrentWeatherWrapper = styled.div`
+    padding: 30px 0 30px 0;
 `
