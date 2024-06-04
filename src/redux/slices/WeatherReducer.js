@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchCityDetails, fetchWeatherDetails } from "../action/WeatherAction";
 import { getErrorMessage } from "../../util/errorUtil";
-import { telAvivAutocomplete } from "../../constants/ResponseSearchCirtConst";
+import { TelAvivSelectedCityDefault } from "../../constants/TelAvivSelectedCityDefault";
 
 const initialState = {
   cityMatches: [],
   isLoading: false,
-  selectedCity: telAvivAutocomplete[0],
+  selectedCity: TelAvivSelectedCityDefault,
   errorFetchMessage: {errorMsg: '', isOpenAlert: false},
   cityWeather : {cityKey: '', fiveDayForecast: [], currentDayForecast: {}, currentWeather: {}}
 };
@@ -57,7 +57,7 @@ const weatherSlice = createSlice({
 
         state.cityMatches = [];
         state.isLoading = false;
-        state.errorFetchMessage = {errorMsg: getErrorMessage(action.error.status), isOpenAlert: true}
+        state.errorFetchMessage = {errorMsg: getErrorMessage(action.payload.status), isOpenAlert: true}
       })
       .addCase(fetchWeatherDetails.pending, (state) => {
         state.isLoading = true;
@@ -78,7 +78,7 @@ const weatherSlice = createSlice({
         }
 
         state.isLoading = false;
-        state.errorFetchMessage = {errorMsg: getErrorMessage(action.error.status), isOpenAlert: true}
+        state.errorFetchMessage = {errorMsg: getErrorMessage(action.payload.status), isOpenAlert: true}
       })
   },
 });
