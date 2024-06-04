@@ -6,6 +6,7 @@ const Wrapper = styled.div`
     gap: 13px;
     display: flex;
     margin-top: 30px;
+    justify-content: space-around;
 `
 
 const WeatherDate = styled.p`
